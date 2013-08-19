@@ -1618,6 +1618,23 @@ class rcube_sieve_engine
                 . (in_array_nocase($flag, $flags_target) ? 'checked="checked"' : '') . ' />'
                 . rcube::Q($this->plugin->gettext('flag'.$fidx)) .'<br>';
         }
+
+        // collecting labels from message_label plugin. Note: I am using my own version of message_label plugin that stores the flags in clear text
+        // see https://github.com/tpokorra/message_label/tree/message_label_tbits
+        $flag_message_label = "";
+        foreach ($flags_target as $flag) {
+            if (in_array_nocase($flag, array_values($flags)) === false) {
+                $flag_message_label = $flag;
+            }
+        }
+        $prefs = $this->rc->config->get('message_label', array());
+        $out .= '<select id="flag_message_label" name="_action_flags[' .$id .'][]">';
+        $out .= '<option value="no_message_label" '.($flag_message_label==''?' selected':'').'>No message label selected</option>';
+        foreach ($prefs as $key => $p) {
+            $out .= '<option value="'.$p['text'].'"'.($flag_message_label==$p['text']?' selected':'').'>'.$p['text'].'</option>';
+        }
+        $out .= '</select>';
+
         $out .= '</div>';
 
         // set variable

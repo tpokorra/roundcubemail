@@ -379,6 +379,12 @@ class rcube_sieve_script
                     case 'setflag':
                     case 'removeflag':
                         array_push($exts, $imapflags);
+
+                        if (array_search("no_message_label", $action['target']) !== false) {
+                            // if the user does not want to store the message label anymore
+                            unset($action['target'][array_search("no_message_label", $action['target'])]);
+                        }
+
                         $action_script .= $action['type'].' '
                             . self::escape_string($action['target']);
                         break;
