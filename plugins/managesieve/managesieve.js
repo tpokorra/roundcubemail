@@ -501,6 +501,12 @@ rcube_webmail.prototype.managesieve_save = function()
     return;
   }
 
+  if (this.env.action == 'plugin.managesieve-autoarchive') {
+    var data = $(this.gui_objects.sieveform).serialize();
+    this.http_post('plugin.managesieve-autoarchive', data, this.display_message(this.get_label('managesieve.autoarchive.saving'), 'loading'));
+    return;
+  }
+
   if (this.gui_objects.sieveform) {
     if (parent.rcmail && parent.rcmail.filters_list && this.gui_objects.sieveform.name != 'filtersetform') {
       var id = parent.rcmail.filters_list.get_single_selection();
@@ -764,6 +770,7 @@ function action_type_select(id)
       flags: document.getElementById('action_flags' + id),
       vacation: document.getElementById('action_vacation' + id),
       forward: document.getElementById('action_forward' + id),
+      autoarchive: document.getElementById('action_autoarchive' + id),
       set: document.getElementById('action_set' + id),
       notify: document.getElementById('action_notify' + id),
       addheader: document.getElementById('action_addheader' + id),
@@ -782,7 +789,7 @@ function action_type_select(id)
   else if (v.match(/^(add|set|remove)flag$/)) {
     enabled.flags = 1;
   }
-  else if (v.match(/^(vacation|forward|set|notify|addheader|deleteheader)$/)) {
+  else if (v.match(/^(vacation|forward|autoarchive|set|notify|addheader|deleteheader)$/)) {
     enabled[v] = 1;
   }
 

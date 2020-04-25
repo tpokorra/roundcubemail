@@ -50,6 +50,7 @@ class managesieve extends rcube_plugin
         $this->register_action('plugin.managesieve-action', array($this, 'managesieve_actions'));
         $this->register_action('plugin.managesieve-vacation', array($this, 'managesieve_actions'));
         $this->register_action('plugin.managesieve-forward', array($this, 'managesieve_actions'));
+        $this->register_action('plugin.managesieve-autoarchive', array($this, 'managesieve_actions'));
         $this->register_action('plugin.managesieve-save', array($this, 'managesieve_save'));
         $this->register_action('plugin.managesieve-saveraw', array($this, 'managesieve_saveraw'));
 
@@ -109,9 +110,10 @@ class managesieve extends rcube_plugin
     {
         $vacation_mode = (int) $this->rc->config->get('managesieve_vacation');
         $forward_mode  = (int) $this->rc->config->get('managesieve_forward');
+        $autoarchive_mode  = (int) $this->rc->config->get('managesieve_autoarchive');
 
         // register Filters action
-        if ($vacation_mode != 2 && $forward_mode != 2) {
+        if ($vacation_mode != 2 && $forward_mode != 2 && $autoarchive_mode != 2) {
             $args['actions'][] = array(
                 'action' => 'plugin.managesieve',
                 'class'  => 'filter',
@@ -143,6 +145,17 @@ class managesieve extends rcube_plugin
             );
         }
 
+        // register Autoarchive action
+        if ($autoarchive_mode > 0) {
+            $args['actions'][] = array(
+                'action' => 'plugin.managesieve-autoarchive',
+                'class'  => 'autoarchive',
+                'label'  => 'autoarchive',
+                'domain' => 'managesieve',
+                'title'  => 'autoarchivetitle',
+            );
+        }
+
         return $args;
     }
 
@@ -158,8 +171,9 @@ class managesieve extends rcube_plugin
 
         $vacation_mode = (int) $this->rc->config->get('managesieve_vacation');
         $forward_mode  = (int) $this->rc->config->get('managesieve_forward');
+        $autoarchive_mode  = (int) $this->rc->config->get('managesieve_autoarchive');
 
-        if ($vacation_mode == 2 || $forward_mode == 2) {
+        if ($vacation_mode == 2 || $forward_mode == 2 || $autoarchive_mode == 2) {
             return;
         }
 
@@ -226,6 +240,7 @@ class managesieve extends rcube_plugin
         // handle other actions
         $engine_type = $this->rc->action == 'plugin.managesieve-vacation' ? 'vacation' : '';
         $engine_type = $this->rc->action == 'plugin.managesieve-forward' ? 'forward' : $engine_type;
+        $engine_type = $this->rc->action == 'plugin.managesieve-autoarchive' ? 'autoarchive' : $engine_type;
 
         $engine      = $this->get_engine($engine_type);
         $this->init_ui();
